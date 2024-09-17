@@ -1,37 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useAuthentication } from '../../hooks/useAuthentication';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import styles from './Login.module.css';
-import { useAuthentication } from '../../hooks/useAuthentication';
+import styles from './Register.module.css';
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
+  const [displayName, setDisplayName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-  const navigate= useNavigate();
 
-  const { login, error: authError, loading } = useAuthentication();
+  const { createUser, error: authError } = useAuthentication();
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setError('');
+    setError(null);
 
     const user = {
+      displayName,
       email,
       password,
     };
 
-    const res = await login(user);
-    if(res){
-      navigate('/');
+    try {
+      const res = await createUser(user);
+      if (res) {
+        toast.success('Conta criada com sucesso! Redirecionando para o login...');
+        setTimeout(() => {
+          navigate('/login'); 
+        }, 2000);
+      }
+    } catch (error) {
+      toast.error('Erro ao criar conta. Tente novamente.');
     }
-
-    console.log(res);
   };
+
   useEffect(() => {
     if (authError) {
+      setError(authError);
       toast.error(authError); 
     }
   }, [authError]);
@@ -41,8 +50,19 @@ const Login: React.FC = () => {
       <i style={{ "--color": "#1f2b37" } as React.CSSProperties}></i>
       <i style={{ "--color": "#28323c" } as React.CSSProperties}></i>
       <i style={{ "--color": "#4de0fe" } as React.CSSProperties}></i>
-      <form className={styles.login} onSubmit={handleSubmit}>
-        <h2>Login</h2>
+      <form className={styles.register} onSubmit={handleSubmit}>
+        <h2>Criar conta</h2>
+        <label className={styles.inputBox}>
+          <span>Nome:</span>
+          <input
+            type="text"
+            name="displayName"
+            required
+            placeholder="Nome do usuário"
+            onChange={(e) => setDisplayName(e.target.value)}
+            value={displayName}
+          />
+        </label>
         <label className={styles.inputBox}>
           <span>E-mail:</span>
           <input
@@ -66,20 +86,15 @@ const Login: React.FC = () => {
           />
         </label>
         <label className={styles.inputBox}>
-          <input
-            type="submit"
-            value={loading ? 'Carregando...' : 'Entrar'}
-            disabled={!!loading}
-          />
+          <input type="submit" value="Criar Conta" />
         </label>
         <div className={styles.links}>
-          <a href="esqueceu-senha">Esqueceu a senha?</a>
-          <a href="criar-conta">Criar Conta</a>
+          <a href="login">Login</a>
         </div>
       </form>
-      <ToastContainer />
+      <ToastContainer /> 
     </div>
   );
 };
 
-export default Login;
+export default Register;

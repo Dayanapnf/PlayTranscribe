@@ -11,7 +11,7 @@ body{
 }
 .container i{
   position: absolute;
-  inset: -5px;
+  inset: -20px;
   border: 2px solid #1f2b37;
   transition: .5s;
 }
@@ -32,7 +32,7 @@ body{
   filter: drop-shadow(0 0 20px var(--color));
 }
 
-.container .recuperarSenha {
+.container .register {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,29 +44,17 @@ body{
 }
 
 
-.container .recuperarSenha h2 {
+.container .register h2 {
   font-size: 2rem;
   color: #1f2b37;
 }
-.container .recuperarSenha p  {
-  text-align: center;
-  font-size: 0.8rem;
-  color: #28323c;
-  margin-bottom: 10px;
-}
-.container  .recuperarSenha label span{
-  display: block;
-  margin-bottom: 5px;
-  margin-left: 5px;
-  font-weight: bold;
-}
 
 
-.container .recuperarSenha .inputBox {
+.container .register .inputBox {
   width: 100%; 
 }
 
-.container .recuperarSenha .inputBox input {
+.container .register .inputBox input {
   width: 100%; 
   padding: 10px 20px;
   border-radius: 20px;
@@ -74,17 +62,16 @@ body{
   border: 2px solid #1f2b37;
   background: transparent;
   color: #1f2b37;
-  margin-bottom: 10px;
 }
 
 
-.container .recuperarSenha .inputBox input::placeholder {
+.container .register .inputBox input::placeholder {
   color: #28323c;
   font-weight: initial;
 }
 
 
-.container .recuperarSenha .inputBox input[type="submit"] {
+.container .register .inputBox input[type="submit"] {
   background: linear-gradient(45deg, #fff, #4de0fe);
   border: none;
   color: #28323c;
@@ -92,11 +79,32 @@ body{
   font-size: medium;
   cursor: pointer;
 }
-.container .recuperarSenha .inputBox input[type="submit"]:hover {
+.container .register .inputBox input[type="submit"]:hover {
   transform: scale(1); 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
+.container .register .links {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px ;
+  font-size: 1rem;
+}
+.container .register .links a {
+  text-decoration: none;
+  color: #1f2b37;
+}
+.container .register .links a:hover{
+  font-weight: bold;
+}
+.container  .register label span{
+  display: block;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  font-weight: bold;
+}
 @keyframes animar {
   0%{
     transform: rotate(0deg);
@@ -116,32 +124,35 @@ body{
 /* ADAPTAÇÕES PARA TELAS MENORES */
 @media (max-width: 768px) {
   .container {
-    width: 350px;
-    height: 350px;
+    width: 420px;
+    height: 420px;
   }
   .container i {
     inset: -20px;
   }
  
-  .container .recuperarSenha {
+  .container .register {
     width: 250px; 
   }
 
-  .container .recuperarSenha h2 {
+  .container .register h2 {
     font-size: 1.5rem;
   }
 
-  .container .recuperarSenha .inputBox input {
+  .container .register .inputBox input {
     padding: 8px 15px;
     font-size: 0.9rem;
   }
 
-  .container .recuperarSenha .inputBox input[type="submit"] {
+  .container .register .inputBox input[type="submit"] {
     width: 60%; 
     margin: 0 auto;
     display: block;
   }  
-
+  .container .register .links {
+   font-size: 1rem;
+  }
+  
 }
 
 @media (max-width: 380px) {
@@ -153,24 +164,26 @@ body{
     inset: -35px;
   }
 
-  .container .recuperarSenha {
+  .container .register {
     width: 150px; 
   }
 
-  .container .recuperarSenha h2 {
+  .container .register h2 {
     font-size: 1.2rem;
   }
 
-  .container .recuperarSenha .inputBox input {
+  .container .register .inputBox input {
     padding: 6px 10px;
     font-size: 0.8rem; 
   }
 
-  .container .recuperarSenha .inputBox input[type="submit"] {
+  .container .register .inputBox input[type="submit"] {
     width: 70%; 
     margin: 0 auto;
     display: block;
   }
 
-
+  .container .register .links {
+    font-size: 0.8rem;
+  }
 }

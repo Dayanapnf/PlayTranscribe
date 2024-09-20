@@ -1,40 +1,71 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import styles from './Login.module.css';
-import { useAuthentication } from '../../hooks/useAuthentication';
+import React, { useState, FormEvent } from 'react';
+import { auth } from '../../firebase/config'; // Importa o auth do arquivo de configuração
+import { signInWithEmailAndPassword } from 'firebase/auth'; // Importa a função para login
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Para redirecionar após login
+import styles from './Login.module.css'; // Certifique-se de que o caminho está correto
+import { useAuth } from '../../context/AuthContext'; // Importa o hook do contexto
+import { toast } from 'react-toastify';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string | null>(null);
-  const navigate= useNavigate();
+  const [error, setError] = useState<string>('');
+  const [success, setSuccess] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate(); // Hook para redirecionar
+  const { setUser } = useAuth(); // Função para atualizar o estado do usuário
 
-  const { login, error: authError, loading } = useAuthentication();
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    
+    setLoading(true);
     setError('');
+    setSuccess('');
+  
+    try {
+      // Faz o login com email e senha no Firebase
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await userCredential.user?.getIdToken(); // Obtém o ID Token do Firebase
+      
+      if (!idToken) throw new Error('Token não obtido.');
+  
+      console.log('ID Token:', idToken); // Log do ID Token
+      
+      // Envia o ID Token para o backend para validação e geração do JWT
+      const response = await axios.post('http://localhost:5000/api/auth/login', { idToken });
+  
+      console.log('Resposta do backend:', response.data); // Log da resposta do backend
+  
+      if (response.data.success) {
+        // Armazena o JWT no localStorage
+        const token = response.data.token;
+        localStorage.setItem('token', token); // Salva o JWT
+    
+        // Atualiza o estado global
+        setUser(response.data.user);
 
-    const user = {
-      email,
-      password,
-    };
-
-    const res = await login(user);
-    if(res){
-      navigate('/');
+        setSuccess('Login realizado com sucesso!');
+        
+        navigate('/'); // Redireciona para o home
+      } else {
+        setError('Falha no login.');
+      }
+    } catch (err: any) {
+      console.error('Erro ao realizar login:', err);
+      if (err.response) {
+        console.error('Resposta do servidor:', err.response.data);
+        console.error('Status do erro:', err.response.status);
+      } else if (err.request) {
+        console.error('Nenhuma resposta recebida:', err.request);
+      } else {
+        console.error('Erro ao configurar a solicitação:', err.message);
+      }
+      setError('Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
     }
-
-    console.log(res);
   };
-  useEffect(() => {
-    if (authError) {
-      toast.error(authError); 
-    }
-  }, [authError]);
 
   return (
     <div className={styles.container}>
@@ -69,15 +100,16 @@ const Login: React.FC = () => {
           <input
             type="submit"
             value={loading ? 'Carregando...' : 'Entrar'}
-            disabled={!!loading}
+            disabled={loading}
           />
         </label>
+        {error && <p className={styles.error}>{error}</p>}
+        {success && <p className={styles.success}>{success}</p>}
         <div className={styles.links}>
-          <a href="esqueceu-senha">Esqueceu a senha?</a>
-          <a href="criar-conta">Criar Conta</a>
+          <a href="/esqueceu-senha">Esqueceu a senha?</a>
+          <a href="/criar-conta">Criar Conta</a>
         </div>
       </form>
-      <ToastContainer />
     </div>
   );
 };

@@ -1,22 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import styles from './NavBar.module.css'; 
-import { useAuthentication } from '../../hooks/useAuthentication';
-import { useAuthValue } from '../../context/AuthContext';
-import iconePlayTranscribe from '../../assets/LOGO_TRANSCRICAO.png'; 
+import { useAuth } from '../../context/AuthContext'; // Importa o contexto
+import styles from './NavBar.module.css';
+import iconePlayTranscribe from '../../assets/LOGO_TRANSCRICAO.png';
+import Logout from '../../pages/Login/Logout'; 
 
-const NavBar: React.FC = () => {
-  const { user } = useAuthValue();
-  const { logout } = useAuthentication();
+const Navbar = () => {
+  const { user, loading, error } = useAuth(); // Usa o contexto
   const navigate = useNavigate();
-  const [isLoggingOut, setIsLoggingOut] = React.useState<boolean>(false);
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    await logout();
-    setIsLoggingOut(false);
-    navigate("/"); 
-  };
+  if (loading) {
+    return <div>Carregando...</div>; // Exibe mensagem de carregamento
+  }
 
   return (
     <nav className={styles.navbar}>
@@ -36,7 +31,7 @@ const NavBar: React.FC = () => {
             Home
           </NavLink>
         </li>
-        {!user && (
+        {!user ? (
           <>
             <li>
               <NavLink to="/login" className={({ isActive }) => (isActive ? styles.active : '')}>
@@ -49,13 +44,7 @@ const NavBar: React.FC = () => {
               </NavLink>
             </li>
           </>
-        )}
-        <li>
-          <NavLink to="/about" className={({ isActive }) => (isActive ? styles.active : '')}>
-            Sobre
-          </NavLink>
-        </li>
-        {user && (
+        ) : (
           <>
             <li>
               <NavLink to="/dashboard" className={({ isActive }) => (isActive ? styles.active : '')}>
@@ -63,20 +52,13 @@ const NavBar: React.FC = () => {
               </NavLink>
             </li>
             <li>
-              <button 
-                onClick={handleLogout} 
-                className={styles.logoutButton}
-                disabled={isLoggingOut}
-              >
-                {isLoggingOut ? 'Saindo...' : 'Sair'}
-              </button>
+              <Logout /> {/* Use o componente Logout aqui */}
             </li>
           </>
         )}
-        
       </ul>
     </nav>
   );
 };
 
-export default NavBar;
+export default Navbar;

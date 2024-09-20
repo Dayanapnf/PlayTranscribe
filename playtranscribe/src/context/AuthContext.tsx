@@ -1,50 +1,81 @@
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase/config'; // Certifique-se de importar a configuração do Firebase correta
+import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
+import axios from 'axios';
+import {jwtDecode} from 'jwt-decode'; // Corrigido para usar import padrão
+import { db } from '../firebase/config'; // Certifique-se de importar sua configuração do Firebase
+import { doc, getDoc } from 'firebase/firestore'; 
+interface User {
+  uid: string;
+  email: string;
+  name?: string; 
+}
 
-// Defina a interface do contexto
 interface AuthContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  loading: boolean;
+  error: string | null;
 }
 
-// Crie o contexto com valor padrão
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-// O AuthProvider fornece o contexto para seus filhos
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser); // Atualiza o estado do usuário com o estado persistido
-      setLoading(false); // Finaliza o carregamento após verificar o estado do usuário
-    });
+    const token = localStorage.getItem('token');
 
-    return () => unsubscribe(); // Limpa o ouvinte ao desmontar o componente
+    if (token) {
+      try {
+        // Decodifica o JWT
+        const decodedUser = jwtDecode(token) as User; 
+        setUser({
+          uid: decodedUser.uid,
+          email: decodedUser.email,
+          name: decodedUser.name, 
+        });
+        console.log("NOME"+ user?.name);
+
+        // Opcional: Verifica a validade do token com o backend
+        axios.get('http://localhost:5000/api/auth/verify', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => {
+          if (!response.data.success) {
+            localStorage.removeItem('token');
+            setUser(null);
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem('token');
+          setError('Não foi possível verificar o token.');
+        });
+      } catch (error) {
+        setError('Token inválido.');
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  if (loading) {
-    return <p>Carregando...</p>; // Opcional: pode colocar um loading spinner ou mensagem de carregamento
-  }
-
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, loading, error }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook customizado para usar o AuthContext
-export const useAuthValue = () => {
+// Hook customizado para acessar o contexto (opcional)
+const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthValue must be used within an AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
+
+export { AuthProvider, useAuth };

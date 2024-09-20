@@ -1,0 +1,121 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 20px;
+}
+
+.transcricoesContainer {
+  flex: 1;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex; 
+  flex-direction: column; 
+  justify-content: space-between; 
+}
+
+
+.tabelaContainer {
+  flex: 3;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  text-align: left; 
+  border-bottom: 1px solid #e0e0e0; 
+}
+
+.table th {
+  background-color: #f9f9f9; 
+}
+
+.progressBarContainer {
+  background-color: #e0e0e0; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  height: 20px; 
+  margin: 10px 0; 
+}
+
+
+.progressBar {
+  background-color:  #4de0fe;; 
+  height: 100%; 
+  transition: width 0.3s ease; 
+}
+.button_down{
+  background: none;
+  border: 2px solid #1f1f1f;
+  border-radius: 10px;
+  color: #1f1f1f;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.button_pen{
+  background: none;
+  border: 2px solid #1f1f1f;
+  border-radius: 10px;
+  color: #1f1f1f;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.button_down:hover {
+  transform: scale(1.1); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+.link_visualizar{
+  background: #4de0fe;
+  border: 2px solid #1f1f1f;
+  border-radius: 10px;
+  color: #1f1f1f;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 2px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.link_visualizar:hover {
+  transform: scale(1.1); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+.disabledLink {
+  border-color: #1f1f1f;
+  background-color: transparent;
+  color: #1f1f1f; 
+  text-decoration: none;
+  cursor: not-allowed; 
+}
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* Empilhar elementos em telas pequenas */
+  }
+
+  .tabelaContainer,
+  .transcricoesContainer {
+    width: 90%; /* Garantir que ocupem 100% da largura */
+    margin: auto;
+  }
+
+  .table {
+    font-size: 14px; /* Ajustar o tamanho da fonte */
+  }
+
+  .table th,
+  .table td {
+    padding: 12px; /* Espaçamento maior nas células */
+  }
+}

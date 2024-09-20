@@ -1,0 +1,84 @@
+ 
+  
+
+.uploadButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.uploadCard{
+  background-color: #fff;
+  border: none;
+  color: #1f2b37;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+.container_user{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 60%;
+  height: 200px;
+  background-color: #fff;
+  border-radius: 20px;
+}
+.container {
+  text-align: center;
+  background-color: #faf5ff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+.input_container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: block;
+}
+
+
+.uploadButton {
+  padding: 15px 20px;
+  background-color: #1f2b37;
+  color: #fff;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+.input_up {
+  padding: 10px 60px;
+  width: 300px;
+  flex: 1;
+  border-radius: 5px 0 0 5px;
+  border: 2px solid #1f2b37;
+  outline: none;
+  font-size: 1rem;
+  outline: none;
+}
+
+
+
+.terms {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.terms a {
+  color: #6b4df2;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}

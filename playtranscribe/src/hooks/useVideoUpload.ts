@@ -1,39 +1,98 @@
 import { useState } from 'react';
-import { uploadVideoToFirebase } from '../services/firebaseService';
-import { requestTranscription } from '../services/transcriptionService';
+import { toast } from 'react-toastify';
+import { getAuth } from 'firebase/auth';
+import axios from 'axios';
+import useTranscription from './useTranscription';
+import { useNavigate } from 'react-router-dom';
 
 const useVideoUpload = () => {
-  const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const { transcribeVideo } = useTranscription();
+  const navigate = useNavigate();
+  const MAX_FILE_SIZE = 25 * 1024 * 1024;
 
-  const uploadAndTranscribe = async (file: File, userId: string) => {
-    try {
-      if (file.size > 25 * 1024 * 1024) {
-        alert('O arquivo de vídeo excede o limite de 25MB.');
-        return;
-      }
+  const getFirebaseToken = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
 
-      setIsUploading(true);
-
-      // Log do início do upload
-      console.log('Iniciando upload do vídeo...');
-      const videoUrl = await uploadVideoToFirebase(file, userId);
-      console.log('Upload concluído. URL do vídeo:', videoUrl);
-
-      // Log do início da transcrição
-      console.log('Iniciando transcrição do vídeo...');
-      const transcriptionId = await requestTranscription(videoUrl, userId);
-      console.log('Transcrição iniciada. ID da transcrição:', transcriptionId);
-
-      alert('Upload e transcrição bem-sucedidos!');
-    } catch (error) {
-      console.error('Erro ao fazer upload e transcrição:', error);
-      alert('Erro durante o upload ou a transcrição.');
-    } finally {
-      setIsUploading(false);
+    if (user) {
+      return await user.getIdToken();
+    } else {
+      throw new Error('Usuário não está autenticado.');
     }
   };
 
-  return { uploadAndTranscribe, isUploading };
+  const checkQuota = async (fileSize: number) => {
+    const token = await getFirebaseToken();
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/check-quota', {
+        fileSizeInBytes: fileSize,
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      return response.data.canUpload;
+    } catch (err) {
+      console.error('Erro ao verificar cota:', err);
+      throw new Error('Erro ao verificar cota.');
+    }
+  };
+
+  const uploadVideo = async (file: File) => {
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('O arquivo é muito grande! O tamanho máximo permitido é 25MB.');
+      return null;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const canUpload = await checkQuota(file.size);
+      if (!canUpload) {
+        toast.error("Limite de cota diária excedido. Tente novamente amanhã.");
+        return null;
+      }
+
+      toast.info('Upload iniciado. A transcrição será processada.');
+      const token = await getFirebaseToken();
+      const formData = new FormData();
+      formData.append('video', file);
+
+      const uploadResponse = await axios.post('http://localhost:5000/api/auth/upload', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (uploadResponse.status === 200) {
+        setSuccess('Upload bem-sucedido!');
+        toast.success('Upload bem-sucedido!');
+        navigate('/dashboard');
+        const videoUrl = uploadResponse.data.videoUrl;
+        const transcriptId = uploadResponse.data.transcriptId;
+
+        await transcribeVideo(videoUrl, transcriptId);
+        return true; 
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido.';
+      console.error('Erro ao fazer upload:', errorMessage);
+      setError(errorMessage);
+      toast.error(errorMessage); // Adicione toast para erro
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { uploadVideo, isLoading, error, success };
 };
 
 export default useVideoUpload;

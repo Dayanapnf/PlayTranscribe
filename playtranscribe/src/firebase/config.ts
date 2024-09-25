@@ -6,13 +6,13 @@ import { getStorage } from "firebase/storage";
 
 // Configuração do Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyCO4CjtV-fsTxwRQ3AD0WSo6at82J8flog",
-  authDomain: "playtranscribe.firebaseapp.com",
-  projectId: "playtranscribe",
-  storageBucket: "playtranscribe.appspot.com",
-  messagingSenderId: "188309684942",
-  appId: "1:188309684942:web:fbee2c7ffda4113b4f469f",
-  measurementId: "G-FGCHMLDRY5"
+  apiKey: "your_api_key",
+  authDomain: "authdomain.firebaseapp.com",
+  projectId: "projectID",
+  storageBucket: "storagename.appspot.com",
+  messagingSenderId: "messagingSenderId",
+  appId: "appID",
+  measurementId: "measurementId"
 };
 
 // Inicializando o Firebase

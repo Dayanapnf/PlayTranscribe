@@ -9,11 +9,19 @@ firebase-debug.*.log*
 
 # Firebase cache
 .firebase/
+.firebaserc
+firebase.json
+firestore.rules
+storage.rules
+firestore.indexes.json
+firebaseConfig.js
 
 /node_modules
 .env
 
 # Firebase config
+playtranscribe-firebase-adminsdk-st6um-2ba0aa147a.json
+
 
 # Uncomment this if you'd like others to create their own Firebase project.
 # For a team working on the same Firebase project(s), it is recommended to leave

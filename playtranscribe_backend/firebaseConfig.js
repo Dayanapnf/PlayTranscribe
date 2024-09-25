@@ -1,10 +1,10 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./playtranscribe-firebase-adminsdk-st6um-2ba0aa147a.json');
+const serviceAccount = require('your_admin_sdk.json');
 
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: 'playtranscribe.appspot.com',
+    storageBucket: 'your_storage',
   });
 }
 
